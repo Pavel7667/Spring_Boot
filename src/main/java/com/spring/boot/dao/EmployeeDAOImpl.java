@@ -1,18 +1,19 @@
 package com.spring.boot.dao;
 
 import com.spring.boot.entity.Employee;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.List;
 
 // @ Repository this class should work with DB
 @Repository
 public class EmployeeDAOImpl implements EmployeeDAO {
 
+    // link to Object which help work with DB
     @Autowired
     private EntityManager entityManager;
 
@@ -23,12 +24,8 @@ public class EmployeeDAOImpl implements EmployeeDAO {
      */
 
     public List<Employee> getAllEmployees() {
-        Session session = entityManager.unwrap(Session.class);
-
-        Query<Employee> query =
-                session.createQuery("from Employee", Employee.class);
-
-        return query.getResultList();
+        Query query = entityManager.createQuery("from Employee");
+        return (List<Employee>) query.getResultList();
     }
 
     /**
@@ -38,8 +35,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
      */
     @Override
     public void saveEmployee(Employee employee) {
-        Session session = entityManager.unwrap(Session.class);
-        session.saveOrUpdate(employee);
+        entityManager.merge(employee);
     }
 
     /**
@@ -50,8 +46,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
      */
     @Override
     public Employee getEmployee(int id) {
-        Session session = entityManager.unwrap(Session.class);
-        return session.get(Employee.class, id);
+        return entityManager.find(Employee.class, id);
     }
 
     /**
@@ -63,10 +58,9 @@ public class EmployeeDAOImpl implements EmployeeDAO {
      */
     @Override
     public void deleteEmployee(int id) {
-        Session session = entityManager.unwrap(Session.class);
-        Query<Employee> query =
-                session.createQuery("delete from Employee where id =:replace");
-        query.setParameter("replace", id);
+        Query query = entityManager.createQuery("delete from Employee " +
+                "where id =:employeeID");
+        query.setParameter("employeeID", id);
         query.executeUpdate();
     }
 }
