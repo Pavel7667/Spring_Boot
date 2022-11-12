@@ -30,12 +30,15 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
     /**
      * Method saveEmployee save or update object in DB
+     * <p>
+     * Lintel update to see in response JSON id new Created Object
      *
      * @param employee object to save in DB
      */
     @Override
     public void saveEmployee(Employee employee) {
-        entityManager.merge(employee);
+        Employee newEmployee = entityManager.merge(employee);
+        employee.setId(newEmployee.getId());
     }
 
     /**
